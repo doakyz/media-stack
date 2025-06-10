@@ -1,0 +1,154 @@
+## Docker network to allow for simplier service setup
+networks:
+  media:
+    name: media
+
+## Plex = Media Server
+## If nvidia gpu is not being used comment out 'runtime: nvidia' 'NVIDIA_VISIBLE_DEVICES' 'NVIDIA_DRIVER_CAPABILITIES'
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    runtime: nvidia
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=docker
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - ${CONFIG}/plex/appdata/config:/config
+      - ${SHARE}:/share
+    restart: unless-stopped
+    
+## Sonarr - Series Management
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/sonarr/data:/config
+      - ${SHARE}:/share
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+## Radarr - Movie Management
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/radarr/data:/config
+      - ${SHARE}:/share
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+## Bazarr - Subtitle Management for Sonarr and Radarr
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/bazarr/config:/config
+      - ${SHARE}:/share
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+## Prowlarr - Indexer Management
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/prowlarr/data:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+## Lidarr - Music Library Management
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/lidarr/config:/config
+      - ${SHARE}:/share
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+## Jellyseerr - Request Management
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    networks: ['media']
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=${TZ}
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
+    volumes:
+      - ${CONFIG}/jellyseerr/config:/app/config
+    restart: unless-stopped
+
+## Tautulli - Plex Monitoring
+  tautulli:
+    image: ghcr.io/tautulli/tautulli
+    container_name: tautulli
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/tautulli/config:/config
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+
+## QBittorrent - Torrent Client
+## During initial setup a temp password is created - this will be in docker logs
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - ${CONFIG}/qbittorrent/appdata:/config
+      - ${SHARE}:/share
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
