@@ -56,7 +56,8 @@ Because we're using a docker network, connecting the arrs apps is greatly simpli
 We're able to create connections using the container name and the port as a valid http URL
 
 #### Prowlarr connecting to Radarr
-![prowlarr-radarr](img\prowlarr-radarr.png)
+
+![prowlarr-radarr](https://github.com/user-attachments/assets/1c8d247a-1adc-4937-b97e-aee6f46926cb)
 
 This applies to all containers that are connected on the ``media`` docker network
 
