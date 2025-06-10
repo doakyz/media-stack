@@ -16,7 +16,7 @@ share/
 ```
 
 
-### Prerequsite
+### Prerequisites
 - docker compose installed
 - **Optional** - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) for using GPU decode in Plex
 
