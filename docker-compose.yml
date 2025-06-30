@@ -7,7 +7,8 @@ networks:
 ## If nvidia gpu is not being used comment out 'runtime: nvidia' 'NVIDIA_VISIBLE_DEVICES' 'NVIDIA_DRIVER_CAPABILITIES'
 services:
   plex:
-    image: lscr.io/linuxserver/plex:latest
+#    image: lscr.io/linuxserver/plex:latest
+    image: plexinc/pms-docker:latest
     container_name: plex
     network_mode: host
     runtime: nvidia
@@ -87,20 +88,20 @@ services:
     restart: unless-stopped
 
 ## Lidarr - Music Library Management
-  lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    networks: ['media']
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${CONFIG}/lidarr/config:/config
-      - ${SHARE}:/share
-    ports:
-      - 8686:8686
-    restart: unless-stopped
+#  lidarr:
+#    image: lscr.io/linuxserver/lidarr:latest
+#    container_name: lidarr
+#    networks: ['media']
+#    environment:
+#      - PUID=${PUID}
+#      - PGID=${PGID}
+#      - TZ=${TZ}
+#    volumes:
+#      - ${CONFIG}/lidarr/config:/config
+#      - ${SHARE}:/share
+#    ports:
+#      - 8686:8686
+#    restart: unless-stopped
 
 ## Jellyseerr - Request Management
   jellyseerr:
