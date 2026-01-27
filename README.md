@@ -68,7 +68,7 @@ This applies to all containers that are connected on the ``media`` docker networ
 | sonarr     | http://sonarr:8989    |
 | radarr     | http://radarr:7878    |
 | bazarr     | http://bazarr:7878    |
-| prowlarr     | http://sonarr:9696    |
+| prowlarr     | http://prowlarr:9696    |
 | lidarr     | http://lidarr:8686    |
 | jellyseerr     | http://jellyseerr:5055    |
 | qbittorrent     | http://qbittorrent:8080    |
