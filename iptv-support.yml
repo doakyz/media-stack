@@ -1,0 +1,70 @@
+networks:
+  media:
+    external: true
+
+services:
+## Emby - Media server
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    container_name: emby
+    networks: ['media']
+    runtime: nvidia
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - ${CONFIG}/emby/config:/config
+      - ${SHARE}:/share
+    ports:
+      - 8096:8096
+    restart: unless-stopped
+
+## Dispatcharr - IPTV Manager
+  dispatcharr:
+    image: ghcr.io/dispatcharr/dispatcharr:latest
+    container_name: dispatcharr
+    networks: ['media']
+    extra_hosts: # Allow Plex to directly connect to container
+      - "plex:host-gateway"
+    runtime: nvidia
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DISPATCHARR_ENV=aio
+      - REDIS_HOST=localhost
+      - CELERY_BROKER_URL=redis://localhost:6379/0
+      - DISPATCHARR_LOG_LEVEL=info
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [all]
+    volumes:
+      - ${CONFIG}/dispatcharr:/data
+      - ${SHARE}:/share
+    ports:
+      - 9191:9191
+    restart: unless-stopped
+
+## Enhanced Channel Manager - Simplier Dispatcharr UI
+  ecm:
+    image: ghcr.io/motwakorb/enhancedchannelmanager:latest
+    container_name: ecm
+    networks: ['media']
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG}/ecm:/config
+    ports:
+      - 6100:6100
+    restart: unless-stopped
